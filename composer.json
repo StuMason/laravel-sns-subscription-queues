@@ -1,0 +1,30 @@
+{
+  "name": "kirschbaum/laravel-sns-subscription-queues",
+  "description": "A Laravel package that allows the queueing system to deal with the non-laravel payload when subscribed to an AWS SNS topic.",
+  "keywords": ["feature-flags", "feature-toggles", "toggles"],
+  "authors": [
+    {
+      "name": "Nathan Kirschbaum",
+      "email": "nathan.kirschbaum@gmail.com"
+    },
+    {
+      "name": "Alfred Nutile",
+      "email": "me@alfrednutile.info"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "illuminate/config": "~5.0",
+    "illuminate/support": "~5.0",
+    "illuminate/queue": "~5.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Kirschbaum\\LaravelSnsSubscriptionQueues\\": "src/"
+    }
+  },
+  "minimum-stability": "dev"
+}
