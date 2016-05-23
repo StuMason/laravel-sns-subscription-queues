@@ -1,5 +1,9 @@
 # Laravel SNS Subscription Queues
 
+## Under Active Development
+
+This package is actively being developed and should be considered experimental for the time being.
+
 ## Usage
 
 This package extends the default `Illuminate\Queue\QueueServiceProvider` to handle queue payloads from SNS Topic subscriptions. It works by checking for a custom handler configuration in the event the Job doesn't meet the expected Laravel payload structure. If a custom queue handler has been configured this package then adds the necessary structure so that the queue system can process the Job.
@@ -86,4 +90,5 @@ class MyCustomHandler extends Job implements SelfHandling, ShouldQueue
 ## Contributors
 
 [Nathan Kirschbaum](http://www.nathankirschbaum.com/)
+
 [Alfred Nutile](https://alfrednutile.info/)
