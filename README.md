@@ -12,6 +12,17 @@ This package extends the default `Illuminate\Queue\QueueServiceProvider` to hand
 
 Add the package to your project:
 
+For now update your `composer.json`
+
+```json
+    "config": {
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "dev"
+```
+
+then
+
 ```
 composer require kirschbaum/laravel-sns-subscription-queues
 ```
