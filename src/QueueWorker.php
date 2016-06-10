@@ -10,7 +10,9 @@ use Throwable;
 class QueueWorker extends Worker
 {
 
+    protected $job;
     protected $sqs_job;
+    protected $class_name;
     protected $queue_message;
     protected $custom_handler;
 
@@ -37,11 +39,10 @@ class QueueWorker extends Worker
             // be auto-deleted after processing and if so we will go ahead and run
             // the delete method on the job. Otherwise we will just keep moving.
 
-            $this->setSqsJob($job);
-            $this->setQueueMessage();
+            $this->setJob($job);
 
-            if(!$this->jobPropertyExistInTheQueueMessage())
-                $job = $this->createNewJobWithLaravelFormatting($job);
+            if($this->isAnSqsJob())
+                $job = $this->processSqsJob($job);
             
             $job->fire();
 
@@ -66,6 +67,22 @@ class QueueWorker extends Worker
         }
     }
 
+    private function isAnSqsJob()
+    {
+        return $this->getClassName() == 'Illuminate\Queue\Jobs\SqsJob';
+    }
+
+    private function processSqsJob($job)
+    {
+        $this->setSqsJob($job);
+        $this->setQueueMessage();
+
+        if(!$this->jobPropertyExistInTheQueueMessage())
+            $job = $this->createNewJobWithLaravelFormatting($job);
+
+        return $job;
+    }
+
     public function setSqsJob(Job $job)
     {
         $this->sqs_job = $job->getSqsJob();
@@ -83,22 +100,19 @@ class QueueWorker extends Worker
 
     private function createNewJobWithLaravelFormatting($job)
     {
-        $class = get_class($job);
-        if($class == 'Illuminate\Queue\Jobs\SqsJob')
-        {
-            if(!$this->customHandlerExists())
-                throw new Exception("QueueWorker: This sqsJob is missing the typical Laravel job parameters. To use non-standard queue payloads you will need to create and configure a custom handler.");
-                
-            $this->addHandlerClassAndSetData();
-            $this->setUpdatedSqsJobBodyProperty();
+        if(!$this->customHandlerExists())
+            throw new Exception("QueueWorker: This sqsJob is missing the typical Laravel job parameters. To use non-standard queue payloads you will need to create and configure a custom handler.");
 
-            $job = new $class(
-                $job->getContainer(),
-                $job->getSqs(),
-                $job->getQueue(),
-                $this->sqs_job
-            );
-        }
+        $this->addHandlerClassAndSetData();
+        $this->setUpdatedSqsJobBodyProperty();
+
+        $class = $this->getClassName();
+        $job = new $class(
+            $job->getContainer(),
+            $job->getSqs(),
+            $job->getQueue(),
+            $this->sqs_job
+        );
 
         return $job;
     }
@@ -120,17 +134,41 @@ class QueueWorker extends Worker
         return !empty($this->getCustomHandler());
     }
 
-    private function setCustomHandler()
+    public function setCustomHandler($handler = null)
     {
-        $this->custom_handler = config("queue-custom-handlers.{$this->queue_message['TopicArn']}");
+        if(null === $handler)
+            $handler = config("queue-custom-handlers.{$this->queue_message['TopicArn']}");
+
+        $this->custom_handler =  $handler;
     }
 
     public function getCustomHandler()
     {
-        if(null == $this->custom_handler)
+        if(null === $this->custom_handler)
             $this->setCustomHandler();
 
         return $this->custom_handler;
+    }
+
+    public function setJob($job)
+    {
+        $this->job = $job;
+    }
+
+    public function getClassName()
+    {
+        if(!$this->class_name)
+            $this->setClassName();
+
+        return $this->class_name;
+    }
+
+    public function setClassName($class_name = null)
+    {
+        if(null == $class_name)
+            $class_name = get_class($this->job);
+
+        $this->class_name = $class_name;
     }
 
 }

@@ -4,6 +4,10 @@
 
 This package is actively being developed and should be considered experimental for the time being.
 
+## Laravel Version Support
+
+Due to some changes that were made in Laravel version 5.1.20 this package currently only supports version 5.1.20 and higher. It does not support v5.2.0 or higher at this time. 
+
 ## Usage
 
 This package extends the default `Illuminate\Queue\QueueServiceProvider` to handle queue payloads from SNS Topic subscriptions. It works by checking for a custom handler configuration in the event the Job doesn't meet the expected Laravel payload structure. If a custom queue handler has been configured this package then adds the necessary structure so that the queue system can process the Job.
