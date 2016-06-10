@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/kirschbaum/laravel-sns-subscription-queues.svg?branch=master)](https://travis-ci.org/kirschbaum/laravel-sns-subscription-queues)
+
 # Laravel SNS Subscription Queues
 
 ## Under Active Development
